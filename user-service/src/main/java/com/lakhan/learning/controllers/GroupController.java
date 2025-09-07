@@ -2,9 +2,12 @@ package com.lakhan.learning.controllers;
 
 import com.lakhan.learning.dto.CreateNewGroupRequest;
 import com.lakhan.learning.services.GroupService;
+import com.lakhan.learning.dtos.GroupSuggestionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/groups")
@@ -45,7 +48,15 @@ public class GroupController {
     }
 
     @GetMapping("/suggestions")
-    public ResponseEntity<?> suggestGroups() {
-        return ResponseEntity.ok(groupService.suggestGroups());
+    public ResponseEntity<GroupSuggestionResponse> suggestGroups() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails) {
+            // ...extract userId from principal if available...
+            // If you store userId in principal, extract here. Otherwise, adapt as needed.
+        }
+        // For demo, assume userId is available as a custom claim or attribute
+        GroupSuggestionResponse response = groupService.suggestGroups(userId);
+        return ResponseEntity.ok(response);
     }
 }

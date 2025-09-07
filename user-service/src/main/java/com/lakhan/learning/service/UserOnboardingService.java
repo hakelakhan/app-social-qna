@@ -1,6 +1,8 @@
 package com.lakhan.learning.service;
 
 
+import com.lakhan.learning.dtos.UserOnboardingRequest;
+import com.lakhan.learning.dtos.UserOnboardingResponse;
 import com.lakhan.learning.dtos.UserProfileRequest;
 import com.lakhan.learning.dtos.UserProfileResponse;
 import com.lakhan.learning.entities.User;
@@ -45,5 +47,28 @@ public class UserOnboardingService {
 
         // Map Entity -> Response DTO
         return UserProfileResponse.fromUser(savedUser);
+    }
+
+    public UserOnboardingResponse onboardUser(UserOnboardingRequest request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .username(request.getUsername())
+                .name(request.getName())
+                .bio(request.getBio())
+                .interests(request.getInterests())
+                .followersCount(0)
+                .followingCount(0)
+                .postsCount(0)
+                .commentsCount(0)
+                .points(0)
+                .badgesCount(0)
+                .onboarded(true)
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        return UserOnboardingResponse.fromUser(savedUser);
     }
 }

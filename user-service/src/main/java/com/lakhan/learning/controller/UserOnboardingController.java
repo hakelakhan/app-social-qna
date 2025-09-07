@@ -1,18 +1,24 @@
 package com.lakhan.learning.controller;
 
+import com.lakhan.learning.dtos.UserOnboardingRequest;
+import com.lakhan.learning.dtos.UserOnboardingResponse;
 import com.lakhan.learning.dtos.UserProfileResponse;
 import com.lakhan.learning.repository.UserRepository;
+import com.lakhan.learning.service.UserOnboardingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
 @RequestMapping("/secured/onboarding")
 public class UserOnboardingController {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserOnboardingService userOnboardingService;
 
     @GetMapping("/auth/get-profile")
     public ResponseEntity<UserProfileResponse> getProfile(@AuthenticationPrincipal OAuth2User principal) {
@@ -45,4 +51,9 @@ public class UserOnboardingController {
                 });
     }
 
+    @PostMapping("/create")
+    public ResponseEntity<UserOnboardingResponse> onboardUser(@RequestBody UserOnboardingRequest request) {
+        UserOnboardingResponse response = userOnboardingService.onboardUser(request);
+        return ResponseEntity.ok(response);
+    }
 }
