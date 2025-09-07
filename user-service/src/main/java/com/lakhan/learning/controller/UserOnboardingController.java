@@ -51,7 +51,7 @@ public class UserOnboardingController {
                 });
     }
 
-    @PostMapping("/create")
+    @PostMapping("/auth/create")
     public ResponseEntity<UserOnboardingResponse> onboardUser(@RequestBody UserOnboardingRequest request) {
         UserOnboardingResponse response = userOnboardingService.onboardUser(request);
         return ResponseEntity.ok(response);
