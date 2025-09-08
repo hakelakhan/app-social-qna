@@ -1,6 +1,5 @@
 package com.lakhan.learning.entities;
 
-import com.lakhan.learning.dtos.Interest;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,5 +1,6 @@
 package com.lakhan.learning.dtos;
 
+import com.lakhan.learning.entities.Interest;
 import com.lakhan.learning.entities.User;
 import lombok.*;
 import java.time.LocalDateTime;

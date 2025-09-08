@@ -1,6 +1,6 @@
 package com.lakhan.learning.controller;
 
-import com.lakhan.learning.dtos.Interest;
+import com.lakhan.learning.entities.Interest;
 import com.lakhan.learning.service.InterestService;
 import org.springframework.web.bind.annotation.*;
 

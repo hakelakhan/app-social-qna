@@ -1,6 +1,7 @@
 package com.lakhan.learning.dtos;
 
 
+import com.lakhan.learning.entities.Interest;
 import com.lakhan.learning.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,7 +53,7 @@ public class UserProfileResponse {
                     .bio(user.getBio())
                     .interests(user.getInterests() != null
                             ? user.getInterests().stream()
-                            .map(Enum::name)         // Convert enum to String
+                            .map(Interest::getName)         // Convert enum to String
                             .collect(Collectors.toSet())
                             : null)
                     .followersCount(user.getFollowersCount())

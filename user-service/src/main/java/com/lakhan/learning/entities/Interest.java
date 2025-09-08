@@ -1,9 +1,10 @@
-package com.lakhan.learning.dtos;
+package com.lakhan.learning.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "interests")
@@ -21,6 +22,9 @@ public class Interest {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @ManyToMany(mappedBy = "interests", fetch = FetchType.LAZY)
+    private Set<User> users;
 
     // equals and hashCode based on id for entity identity
     @Override

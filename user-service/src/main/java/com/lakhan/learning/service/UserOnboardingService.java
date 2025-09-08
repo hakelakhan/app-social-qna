@@ -1,8 +1,10 @@
 package com.lakhan.learning.service;
 
 
+import com.lakhan.learning.dao.InterestDao;
 import com.lakhan.learning.dtos.UserOnboardingRequest;
 import com.lakhan.learning.dtos.UserOnboardingResponse;
+import com.lakhan.learning.entities.Interest;
 import com.lakhan.learning.entities.User;
 import com.lakhan.learning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.lakhan.learning.constant.Constants.DELIMITER;
@@ -19,9 +22,22 @@ import static com.lakhan.learning.constant.Constants.DELIMITER;
 public class UserOnboardingService {
 
     private final UserRepository userRepository;
-    private final InterestService interestService;
+    private final InterestDao interestDao;
 
     public UserOnboardingResponse onboardUser(UserOnboardingRequest request) {
+
+        Set<Interest> interests = Arrays.stream(request.getInterests().split(DELIMITER))
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .map(name -> interestDao.findByName(name)
+                        .orElseGet(() -> {
+                            Interest newInterest = new Interest();
+                            newInterest.setName(name);
+                            return interestDao.save(newInterest); // persist new
+                        })
+                )
+                .collect(Collectors.toSet());
+
         User user = User.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
@@ -34,6 +50,7 @@ public class UserOnboardingService {
                 .points(0)
                 .badgesCount(0)
                 .onboarded(true)
+                .interests(interests)
                 .isActive(true)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -43,9 +60,6 @@ public class UserOnboardingService {
         //Use here InterestService to save interests for users
 
 //        .interests(Interest.valueOf(request.getInterests(), DELIMITER))
-        interestService.saveInterests(
-                Arrays.stream( request.getInterests().split(DELIMITER))
-                        .collect(Collectors.toList()));
         return UserOnboardingResponse.fromUser(savedUser);
     }
 

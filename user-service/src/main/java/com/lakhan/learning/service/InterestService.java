@@ -1,7 +1,7 @@
 package com.lakhan.learning.service;
 
 import com.lakhan.learning.dao.InterestDao;
-import com.lakhan.learning.dtos.Interest;
+import com.lakhan.learning.entities.Interest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -15,7 +15,10 @@ public class InterestService {
     }
 
     public List<Interest> getTop10Interests() {
-        return interestDao.findTop10ByUsersCount();
+        return interestDao.findAll()
+                .stream()
+                .limit(10)
+                .toList();
     }
     //add here method to save unique interests if not present. if present ignore
     public void saveInterests(List<String> interests) {
