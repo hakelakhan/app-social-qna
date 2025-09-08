@@ -1,13 +1,16 @@
 package com.lakhan.learning.service;
 
 
-import com.lakhan.learning.dtos.*;
+import com.lakhan.learning.dtos.UserOnboardingRequest;
+import com.lakhan.learning.dtos.UserOnboardingResponse;
 import com.lakhan.learning.entities.User;
 import com.lakhan.learning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static com.lakhan.learning.constant.Constants.DELIMITER;
 
@@ -16,6 +19,7 @@ import static com.lakhan.learning.constant.Constants.DELIMITER;
 public class UserOnboardingService {
 
     private final UserRepository userRepository;
+    private final InterestService interestService;
 
     public UserOnboardingResponse onboardUser(UserOnboardingRequest request) {
         User user = User.builder()
@@ -23,7 +27,6 @@ public class UserOnboardingService {
                 .username(request.getUsername())
                 .name(request.getName())
                 .bio(request.getBio())
-                .interests(Interest.valueOf(request.getInterests(), DELIMITER))
                 .followersCount(0)
                 .followingCount(0)
                 .postsCount(0)
@@ -36,7 +39,14 @@ public class UserOnboardingService {
                 .build();
 
         User savedUser = userRepository.save(user);
+        //TODO Save interests
+        //Use here InterestService to save interests for users
 
+//        .interests(Interest.valueOf(request.getInterests(), DELIMITER))
+        interestService.saveInterests(
+                Arrays.stream( request.getInterests().split(DELIMITER))
+                        .collect(Collectors.toList()));
         return UserOnboardingResponse.fromUser(savedUser);
     }
+
 }

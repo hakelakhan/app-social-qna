@@ -37,10 +37,12 @@ public class User {
     private String bio; // short description: "Movie lover, gym rat, and startup dreamer"
 
     // Interests: movie, fitness, career, coding, family, etc.
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)  // Store as "MOVIES" instead of ordinal (0,1,2…)
-    @Column(name = "interest")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_interests",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "interest_id")
+    )
     private Set<Interest> interests = new HashSet<>();
 
     // Social aspects

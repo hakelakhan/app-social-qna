@@ -1,54 +1,37 @@
 package com.lakhan.learning.dtos;
 
-import java.util.Set;
+import jakarta.persistence.*;
+import lombok.*;
 
-public enum Interest {
-    MOVIES("Movies"),
-    FITNESS("Fitness"),
-    CAREER("Career"),
-    CODING("Coding"),
-    FAMILY("Family"),
-    TRAVEL("Travel"),
-    FOOD("Food"),
-    MUSIC("Music"),
-    ART("Art"),
-    SPORTS("Sports"),
-    READING("Reading"),
-    GAMING("Gaming"),
-    UNKNOWN("Unknown");
+import java.util.Objects;
 
-    private String interestName;
+@Entity
+@Table(name = "interests")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Builder
+public class Interest {
 
-    Interest(String interestName) {
-        this.interestName = interestName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    // equals and hashCode based on id for entity identity
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Interest interest)) return false;
+        return Objects.equals(id, interest.id);
     }
 
-    //method that converts a comma-separated string of interests into a Set of Interest enums
-    public static Set<Interest> valueOf(String interests, String delimiter) {
-
-        String[] interestArray = interests.split(delimiter);
-        Set<Interest> interestSet = java.util.Arrays.stream(interestArray)
-                .map(String::trim) // Trim whitespace
-                .map(Interest::fromString)
-                .collect(java.util.stream.Collectors.toSet());
-        return interestSet;
-
-    }
-
-    public String getInterestName() {
-        return interestName;
-    }
-
-    // ✅ Conversion method
-    public static Interest fromString(String name) {
-        if (name == null || name.isBlank()) {
-            return UNKNOWN;
-        }
-        for (Interest interest : Interest.values()) {
-            if (interest.interestName.equalsIgnoreCase(name)) {
-                return interest;
-            }
-        }
-        return UNKNOWN; // fallback if no match found
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
