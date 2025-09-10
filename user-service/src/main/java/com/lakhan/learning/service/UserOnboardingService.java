@@ -8,10 +8,12 @@ import com.lakhan.learning.entities.Interest;
 import com.lakhan.learning.entities.User;
 import com.lakhan.learning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,24 @@ public class UserOnboardingService {
 
     private final UserRepository userRepository;
     private final InterestDao interestDao;
+
+    public UserOnboardingResponse signUp(String email, String name) {
+        User user = User.builder()
+                .email(email)
+                .name(name)
+                .followersCount(0)
+                .followingCount(0)
+                .postsCount(0)
+                .commentsCount(0)
+                .points(0)
+                .badgesCount(0)
+                .onboarded(true)
+                .isActive(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+        User savedUser = userRepository.save(user);
+        return UserOnboardingResponse.fromUser(savedUser);
+    }
 
     public UserOnboardingResponse onboardUser(UserOnboardingRequest request) {
 
@@ -37,30 +57,26 @@ public class UserOnboardingService {
                         })
                 )
                 .collect(Collectors.toSet());
-
-        User user = User.builder()
-                .email(request.getEmail())
-                .username(request.getUsername())
-                .name(request.getName())
-                .bio(request.getBio())
-                .followersCount(0)
-                .followingCount(0)
-                .postsCount(0)
-                .commentsCount(0)
-                .points(0)
-                .badgesCount(0)
-                .onboarded(true)
-                .interests(interests)
-                .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .build();
-
+        Long userId = getLoggedInUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User must exists in db. But User not found with id: " + userId));
+        user.setUsername(request.getUsername());
+        user.setName(request.getName());
+        user.setBio(request.getBio());
+        user.setInterests(interests);
+        user.setOnboarded(true);
+        user.setActive(true);
         User savedUser = userRepository.save(user);
-        //TODO Save interests
-        //Use here InterestService to save interests for users
-
-//        .interests(Interest.valueOf(request.getInterests(), DELIMITER))
         return UserOnboardingResponse.fromUser(savedUser);
+    }
+
+    private Long getLoggedInUserId() {
+        return Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
+    public Optional<UserOnboardingResponse> getProfileByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(UserOnboardingResponse::fromUser);
     }
 
 }

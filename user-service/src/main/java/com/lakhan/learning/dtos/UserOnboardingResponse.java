@@ -27,6 +27,7 @@ public class UserOnboardingResponse {
     private int points;
     private int badgesCount;
     private LocalDateTime createdAt;
+    private String jwt;
 
     public static UserOnboardingResponse fromUser(User user) {
         return UserOnboardingResponse.builder()
