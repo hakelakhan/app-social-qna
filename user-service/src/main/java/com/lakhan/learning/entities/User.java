@@ -25,7 +25,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = true, unique = true, length = 30)
     private String username; // e.g. @lakhan
 
     private String name;
@@ -43,6 +43,9 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "interest_id")
     )
     private Set<Interest> interests = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "members")
+    private Set<Group> userGroups = new HashSet<>();
 
     // Social aspects
     private int followersCount = 0;

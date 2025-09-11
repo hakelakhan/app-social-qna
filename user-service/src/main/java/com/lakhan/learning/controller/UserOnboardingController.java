@@ -30,8 +30,9 @@ public class UserOnboardingController {
     }
 
     @PostMapping("/auth/create")
-    public ResponseEntity<UserOnboardingResponse> onboardUser(@RequestBody UserOnboardingRequest request) {
-        UserOnboardingResponse response = userOnboardingService.onboardUser(request);
+    public ResponseEntity<UserOnboardingResponse> onboardUser(@RequestBody UserOnboardingRequest request, @RequestHeader("Authorization") String authHeader) {
+        UserOnboardingResponse response = userOnboardingService.onboardUser(request, authHeader);
         return ResponseEntity.ok(response);
     }
+
 }

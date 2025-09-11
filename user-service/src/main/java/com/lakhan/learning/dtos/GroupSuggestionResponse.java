@@ -1,7 +1,9 @@
 package com.lakhan.learning.dtos;
 
-import com.lakhan.learning.entities.Group;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -10,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupSuggestionResponse {
-    private List<Group> groups;
+    private List<GroupInfoResponseDto> groups;
 }
 

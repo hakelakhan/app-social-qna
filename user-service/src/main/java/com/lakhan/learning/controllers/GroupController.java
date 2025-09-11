@@ -1,35 +1,37 @@
 package com.lakhan.learning.controllers;
 
+import com.lakhan.learning.config.JwtUtility;
 import com.lakhan.learning.dto.CreateNewGroupRequest;
-import com.lakhan.learning.services.GroupService;
 import com.lakhan.learning.dtos.GroupSuggestionResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.*;
+import com.lakhan.learning.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
 
     private final GroupService groupService;
+    private final JwtUtility jwtUtility;
 
     @Autowired
-    public GroupController(GroupService groupService) {
+    public GroupController(GroupService groupService, JwtUtility jwtUtility) {
         this.groupService = groupService;
+        this.jwtUtility = jwtUtility;
     }
 
     @PostMapping
-    public ResponseEntity<?> createGroup(@RequestBody CreateNewGroupRequest request, @AuthenticationPrincipal OAuth2User principal) {
-        return ResponseEntity.ok(groupService.createGroup(request));
+    public ResponseEntity<?> createGroup(@RequestBody CreateNewGroupRequest request, @RequestHeader("Authorization") String authHeader) {
+
+        Long userId = jwtUtility.extractUserIdFromAuthHeader(authHeader);
+        return ResponseEntity.ok(groupService.createGroup(request, userId));
     }
 
     @PutMapping("/{groupId}")
-    public ResponseEntity<?> updateGroup(@PathVariable Long groupId, @RequestBody CreateNewGroupRequest request) {
-        return ResponseEntity.ok(groupService.updateGroup(groupId, request));
+    public ResponseEntity<?> updateGroup(@PathVariable Long groupId, @RequestBody CreateNewGroupRequest request, @RequestHeader("Authorization") String authHeader) {
+        Long userId = jwtUtility.extractUserIdFromAuthHeader(authHeader);
+        return ResponseEntity.ok(groupService.updateGroup(groupId, request, userId));
     }
 
     @DeleteMapping("/{groupId}")
@@ -50,14 +52,8 @@ public class GroupController {
     }
 
     @GetMapping("/suggestions")
-    public ResponseEntity<GroupSuggestionResponse> suggestGroups() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = null;
-        if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails) {
-            // ...extract userId from principal if available...
-            // If you store userId in principal, extract here. Otherwise, adapt as needed.
-        }
-        // For demo, assume userId is available as a custom claim or attribute
+    public ResponseEntity<GroupSuggestionResponse> suggestGroups(@RequestHeader("Authorization") String authHeader) {
+        Long userId = jwtUtility.extractUserIdFromAuthHeader(authHeader);
         GroupSuggestionResponse response = groupService.suggestGroups(userId);
         return ResponseEntity.ok(response);
     }

@@ -20,5 +20,5 @@ public class CreateNewGroupRequest {
 
     private String groupType; // Group type: "PRIVATE" or "PUBLIC"
 
-    private Set<String> tags; // Tags for categorizing the group (e.g., "fitness", "coding")
+    private Set<String> interests; // Tags for categorizing the group (e.g., "fitness", "coding")
 }

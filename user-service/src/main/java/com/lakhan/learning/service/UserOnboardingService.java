@@ -1,12 +1,14 @@
 package com.lakhan.learning.service;
 
 
+import com.lakhan.learning.config.JwtUtility;
 import com.lakhan.learning.dao.InterestDao;
 import com.lakhan.learning.dtos.UserOnboardingRequest;
 import com.lakhan.learning.dtos.UserOnboardingResponse;
 import com.lakhan.learning.entities.Interest;
 import com.lakhan.learning.entities.User;
 import com.lakhan.learning.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class UserOnboardingService {
 
     private final UserRepository userRepository;
     private final InterestDao interestDao;
+    private final JwtUtility jwtUtility;
 
     public UserOnboardingResponse signUp(String email, String name) {
         User user = User.builder()
@@ -44,7 +47,10 @@ public class UserOnboardingService {
         return UserOnboardingResponse.fromUser(savedUser);
     }
 
-    public UserOnboardingResponse onboardUser(UserOnboardingRequest request) {
+    @Transactional
+    public UserOnboardingResponse onboardUser(UserOnboardingRequest request, String authHeader) {
+
+        Long userId = jwtUtility.extractUserIdFromAuthHeader(authHeader);
 
         Set<Interest> interests = Arrays.stream(request.getInterests().split(DELIMITER))
                 .map(String::trim)
@@ -57,7 +63,6 @@ public class UserOnboardingService {
                         })
                 )
                 .collect(Collectors.toSet());
-        Long userId = getLoggedInUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User must exists in db. But User not found with id: " + userId));
         user.setUsername(request.getUsername());
@@ -71,7 +76,10 @@ public class UserOnboardingService {
     }
 
     private Long getLoggedInUserId() {
-        return Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+        String tmp = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        return Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        return 1L;
     }
 
     public Optional<UserOnboardingResponse> getProfileByEmail(String email) {
@@ -79,4 +87,8 @@ public class UserOnboardingService {
                 .map(UserOnboardingResponse::fromUser);
     }
 
+    public boolean validateUsernameUniqueness(String username) {
+        return !userRepository.existsByUsername(username);
+
+    }
 }

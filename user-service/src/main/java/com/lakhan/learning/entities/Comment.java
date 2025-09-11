@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"post", "createdBy"})
 @Builder
 public class Comment {
 

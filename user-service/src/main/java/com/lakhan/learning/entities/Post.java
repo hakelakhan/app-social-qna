@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"createdBy"})
 @Builder
 public class Post {
 

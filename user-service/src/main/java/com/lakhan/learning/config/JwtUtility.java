@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtility {
     @Value("${jwt.secret}")
-    private String SECRET_KEY ; // move to properties in real app
+    private String SECRET_KEY; // move to properties in real app
     @Value("${jwt.expirationMs}")
     private long expirationTimeInMills;
 
@@ -33,6 +33,14 @@ public class JwtUtility {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public Long extractUserIdFromAuthHeader(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return Long.parseLong(extractUserId(token));
+        }
+        throw new IllegalArgumentException("Invalid Authorization header");
     }
 }
 

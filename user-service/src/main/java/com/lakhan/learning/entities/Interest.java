@@ -2,6 +2,7 @@ package com.lakhan.learning.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Objects;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"users", "groups"})
 @Builder
 public class Interest {
 
@@ -24,8 +25,12 @@ public class Interest {
     private String name;
 
     @ManyToMany(mappedBy = "interests", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<User> users;
 
+    @ManyToMany(mappedBy = "groupInterests", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Group> groups;
     // equals and hashCode based on id for entity identity
     @Override
     public boolean equals(Object o) {
